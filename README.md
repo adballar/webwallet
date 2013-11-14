@@ -1,4 +1,4 @@
-django-trezor
-=============
+Bitcoin web wallet with Trezor support
+======================================
 
-Simple web wallet using Bitcoin Trezor as a private key storage
+Bitcoin web wallet using Bitcoin Trezor as a private key storage
