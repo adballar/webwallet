@@ -1,15 +1,14 @@
-<ol>
-  <li>easy to use with Bitcoins and Litecoints</li>
-  <li>lightweight (no accounts, no passwords, no hassle)</li>
-  <li>ultimately safe</li>
-  <li>accessible online from any computer</li>
-</ol>
-
-<h3>Got your TREZOR device ready?</h3>
-
-<button class="btn btn-lg btn-success">
-  Yes, let's get started
-</button>
-<button class="btn btn-danger">
-  No, I'll buy one first
-</button>
+<dl class="dl-horizontal">
+  <p>
+    <a href="#/device/{{device.id}}/setup"
+       class="btn btn-primary"
+      >Setup device</a>
+    &mdash; Change TREZOR settings.
+  </p>
+  <p>
+    <a href="#/device/{{device.id}}/wipe"
+       class="btn btn-sm btn-danger"
+      >Wipe device</a>
+    &mdash; Delete all data from TREZOR.
+  </p>
+</dl>

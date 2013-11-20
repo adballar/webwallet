@@ -33,10 +33,41 @@
           <li><a href="#">FAQ</a></li>
           <li><a href="#">Support</a></li>
         </ul>
-        <h2 class="text-muted"><a href="">TREZOR Web Wallet</a></h3>
+        <h2><a href="">TREZOR Web Wallet</a></h2>
       </div>
 
-      <div ng-view=""></div>
+      <div class="row">
+        <div class="col-md-4" ng-controller="NavCtrl">
+
+          <!-- Device list -->
+          <ul class="nav">
+
+            <li ng-repeat="device in devices">
+              <a href="#/device/{{device.id}}"
+                 ng-class="{ active: isActive('/device/{{device.id}}')}"
+                ><h4>{{device.title}}</h4></a>
+
+              <!-- Account list -->
+              <ul class="nav">
+                <li ng-repeat="account in device.accounts">
+                  <a href="#/device/{{device.id}}/{{account.id}}"
+                     ng-class="{ active: isActive('/device/{{device.id}}/{{account.id}}') }"
+                    >{{account.title}} ({{account.ballance}} BTC)</a>
+                </li>
+              </ul>
+
+              <a href="#/device/{{device.id}}/account-add" class="btn btn-sm"
+                 ng-class="{ active: isActive('/device/{{device.id}}/account-add') }"
+                ><span class="glyphicon glyphicon-plus"></span> Add account</a>
+            </li>
+
+          </ul>
+
+        </div>
+
+        <!-- Content view -->
+        <div class="col-md-8" ng-view=""></div>
+      </div>
 
       <div class="page-footer">
         <p class="text-muted text-center">
@@ -47,6 +78,8 @@
 
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
+
+    <script src="bower_components/trezor.js/trezor.js"></script>
 
     <!-- build:js scripts/plugins.js -->
     <script src="bower_components/sass-bootstrap/js/affix.js"></script>
@@ -72,6 +105,7 @@
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
+    <script src="scripts/controllers/nav.js"></script>
     <script src="scripts/controllers/main.js"></script>
     <!-- endbuild -->
   </body>
