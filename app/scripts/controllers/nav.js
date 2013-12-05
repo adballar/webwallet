@@ -1,19 +1,11 @@
 'use strict';
 
 angular.module('webwalletApp')
-  .controller('NavCtrl', function ($scope, $location) {
+  .controller('NavCtrl', function (trezorService, $scope, $location, $routeParams) {
 
-    $scope.devices = [{
-      id: 1,
-      title: 'Shopping',
-      accounts: [{
-        id: 1,
-        title: 'Account #1',
-        ballance: 123.456
-      }]
-    }];
+    $scope.devices = trezorService.devices;
 
-    $scope.isActive = function (location) {
-      return location === $location.path();
+    $scope.isActive = function (path) {
+      return $location.path().match(path);
     };
   });

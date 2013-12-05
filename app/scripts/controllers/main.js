@@ -1,6 +1,6 @@
 'use strict';
 
 angular.module('webwalletApp')
-  .controller('MainCtrl', function ($scope, $location) {
+  .controller('MainCtrl', function ($scope) {
 
   });

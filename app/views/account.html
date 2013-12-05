@@ -1,0 +1,31 @@
+<ol class="breadcrumb">
+  <li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li class="active">{{account.label || 'Account #'+account.id}}</li>
+</ol>
+
+<fieldset ng-disabled="!device.is('connected')">
+  <p class="btn-group btn-group-lg">
+    <a class="btn"
+       href="#/device/{{device.serialNumber}}/account/{{account.id}}/send">
+      <span class="glyphicon glyphicon-cloud-upload"></span> Send
+    </a>
+    <a class="btn"
+       href="#/device/{{device.serialNumber}}/account/{{account.id}}/receive">
+      <span class="glyphicon glyphicon-cloud-download"></span> Receive
+    </a>
+  </p>
+</fieldset>
+
+<table class="table table-striped table-hover">
+  <tbody>
+    <tr ng-repeat="tx in account.transactions">
+      <td>{{tx.date | date:'short'}}</td>
+      <td>{{tx.comment || tx.address}}</td>
+      <td class="text-right"
+          ng-class="{ 'text-success': tx.amount > 0,
+                      'text-danger': tx.amount < 0 }"
+        >{{tx.amount | sign}}{{tx.amount | amount:account | number:8}}</td>
+      <td>{{tx.ballance | amount:account | number:8}}</td>
+    </tr>
+  </tbody>
+</table>

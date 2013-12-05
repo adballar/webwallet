@@ -12,6 +12,26 @@ angular.module('webwalletApp', [
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
+      .when('/device/:deviceId', {
+        templateUrl: 'views/device.html',
+        controller: 'DeviceCtrl'
+      })
+      .when('/device/:deviceId/setup', {
+        templateUrl: 'views/setup.html',
+        controller: 'DeviceCtrl'
+      })
+      .when('/device/:deviceId/account/:accountId', {
+        templateUrl: 'views/account.html',
+        controller: 'AccountCtrl'
+      })
+      .when('/device/:deviceId/account/:accountId/send', {
+        templateUrl: 'views/send.html',
+        controller: 'AccountCtrl'
+      })
+      .when('/device/:deviceId/account/:accountId/receive', {
+        templateUrl: 'views/receive.html',
+        controller: 'AccountCtrl'
+      })
       .otherwise({
         redirectTo: '/'
       });

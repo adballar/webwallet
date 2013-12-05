@@ -25,48 +25,62 @@
       <script src="bower_components/json3/lib/json3.min.js"></script>
     <![endif]-->
 
-    <div class="container">
-      <div class="page-header">
-        <ul class="nav nav-pills pull-right">
+    <div class="page-header navbar navbar-inverse navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="/"><img src="images/logo.png" height="50" alt="TREZOR Web Wallet"></a>
+        </div>
+        <ul class="nav navbar-nav navbar-right">
           <li class="active"><a href="#">My Wallet</a></li>
           <li><a href="#">How To</a></li>
           <li><a href="#">FAQ</a></li>
           <li><a href="#">Support</a></li>
         </ul>
-        <h2><a href="">TREZOR Web Wallet</a></h2>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="col-md-4" ng-controller="NavCtrl">
+    <div class="container">
 
-          <!-- Device list -->
-          <ul class="nav">
+      <div class="page-middle row" ng-cloak>
+        <div class="col-md-3">
 
+          <ul class="nav nav-devices" ng-controller="NavCtrl">
+            <!-- Device -->
             <li ng-repeat="device in devices">
-              <a href="#/device/{{device.id}}"
-                 ng-class="{ active: isActive('/device/{{device.id}}')}"
-                ><h4>{{device.title}}</h4></a>
+              <a ng-href="#/device/{{device.serialNumber}}"
+                 ng-class="{ active: isActive('/device/{{device.serialNumber}}$') }">
+                <h4>
+                  {{device.label || 'My TREZOR'}}
+                  <span class="dev-status dev-status-{{device.status()}}" ng-switch="device.status()">
+                    <span ng-switch-when="loading"
+                          class="glyphicon glyphicon-refresh glyphicon-spin"
+                          title="Loading..."></span>
+                    <span ng-switch-when="connected"
+                          class="glyphicon glyphicon-link"
+                          title="Connected"></span>
+                  </span>
+                </h4>
+              </a>
 
-              <!-- Account list -->
-              <ul class="nav">
+              <ul class="nav nav-devices-accounts">
+                <!-- Account -->
                 <li ng-repeat="account in device.accounts">
-                  <a href="#/device/{{device.id}}/{{account.id}}"
-                     ng-class="{ active: isActive('/device/{{device.id}}/{{account.id}}') }"
-                    >{{account.title}} ({{account.ballance}} BTC)</a>
+                  <a ng-href="#/device/{{device.serialNumber}}/account/{{account.id}}"
+                     ng-class="{ active: isActive('/device/{{device.serialNumber}}/account/{{account.id}}') }"
+                    >{{account.label || 'Account #'+account.id}} <small>({{account.ballance}} {{account.cointype}})</small></a>
                 </li>
               </ul>
 
-              <a href="#/device/{{device.id}}/account-add" class="btn btn-sm"
-                 ng-class="{ active: isActive('/device/{{device.id}}/account-add') }"
+              <a ng-href="#/device/{{device.serialNumber}}/account-add" class="btn btn-sm"
+                 ng-class="{ active: isActive('/device/{{device.serialNumber}}/account-add') }"
                 ><span class="glyphicon glyphicon-plus"></span> Add account</a>
             </li>
-
           </ul>
 
         </div>
 
         <!-- Content view -->
-        <div class="col-md-8" ng-view=""></div>
+        <div class="page-content col-md-9" ng-view=""></div>
       </div>
 
       <div class="page-footer">
@@ -74,6 +88,7 @@
           © BitcoinTrezor.com 2013. All rights reserved
         </p>
       </div>
+
     </div>
 
     <script src="bower_components/jquery/jquery.js"></script>
@@ -105,8 +120,15 @@
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
+    <script src="scripts/services/utils.js"></script>
+    <script src="scripts/services/storage.js"></script>
+    <script src="scripts/services/trezorService.js"></script>
+    <script src="scripts/services/TrezorDevice.js"></script>
+    <script src="scripts/services/DeviceAccount.js"></script>
     <script src="scripts/controllers/nav.js"></script>
     <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/device.js"></script>
+    <script src="scripts/controllers/account.js"></script>
     <!-- endbuild -->
   </body>
 </html>

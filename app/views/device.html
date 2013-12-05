@@ -1,0 +1,27 @@
+<ol class="breadcrumb">
+  <li class="active">{{device.label || 'My TREZOR'}}</li>
+</ol>
+
+<div ng-if="!device.is('connected')" class="alert alert-danger">
+  <h4>Sorry!</h4> Please connect your device to access this section.
+</div>
+
+<fieldset ng-disabled="!device.is('connected')">
+  <ul class="list-unstyled">
+    <li>
+      <a ng-href="#/device/{{device.serialNumber}}/setup" class="btn btn-link"
+        ><span class="glyphicon glyphicon-cog"></span> Setup device</a>
+      <small class="text-muted">- Configure label and other options</small>
+    </li>
+    <li>
+      <a ng-href="#/device/{{device.serialNumber}}/wipe" class="btn btn-link"
+        ><span class="glyphicon glyphicon-warning-sign"></span> Wipe device</a>
+      <small class="text-muted">- Delete all data and reset to factory settings</small>
+    </li>
+    <li>
+      <a href="" ng-click="forget(device)" class="btn btn-link"
+        ><span class="glyphicon glyphicon-off"></span> Forget device</a>
+      <small class="text-muted">- Remove from my wallet</small>
+    </li>
+  </ul>
+</fieldset>

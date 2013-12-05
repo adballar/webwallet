@@ -1,3 +1,90 @@
+/* Icons */
+
+@-moz-keyframes spin {
+  from { -moz-transform: rotate(0deg); }
+  to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(360deg); }
+}
+
+.glyphicon-spin {
+  -moz-animation: spin 2s infinite linear;
+  -o-animation: spin 2s infinite linear;
+  -webkit-animation: spin 2s infinite linear;
+  animation: spin 2s infinite linear;
+}
+
+/* Global Bootstrap overrides */
+
+.form-control,
+.btn,
+.alert,
+.breadcrumb {
+  border-radius: 0;
+}
+
+.alert {
+  border: 0;
+  padding: 20px;
+}
+
+.breadcrumb {
+  display: none;
+}
+
+/* Layout, header, footer */
+
+.page-header {
+  margin: 0;
+  padding: 15px 0;
+}
+
+.page-header .navbar-brand {
+  padding: 0;
+  padding-left: 30px;
+}
+
+.page-middle {
+  padding-top: 20px;
+}
+
+.page-content {
+  padding-top: 10px;
+}
+
 .page-footer {
   margin: 40px 0;
+}
+
+/* Device nav */
+
+.nav-devices .active {
+  background: rgba(66, 139, 202, 0.1);
+}
+
+.dev-status {
+  float: right;
+}
+
+.dev-status.dev-status-loading {
+  opacity: 1.0;
+}
+
+.dev-status.dev-status-connected {
+  opacity: 0.5;
+}
+
+.dev-status.dev-status-disconnected {
+  opacity: 0;
+}
+
+.dev-status .glyphicon {
+  height: 20px;
+  margin-top: -2px;
 }
