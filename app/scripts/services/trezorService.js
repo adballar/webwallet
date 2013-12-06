@@ -1,14 +1,16 @@
 'use strict';
 
 angular.module('webwalletApp')
-  .service('trezorService', function TrezorService(utils, storage, trezor, TrezorDevice, $q) {
+  .service('trezorService', function TrezorService(utils, storage, trezor, TrezorDevice, $q, $rootScope) {
 
-    var self = this;
+    var self = this,
+        STORAGE_DEVICES = 'trezorServiceDevices';
 
-    self.devices = []; // the list of available devices
     self.get = getDevice;
     self.forget = forgetDevice;
+    self.devices = deserialize(restore()); // the list of available devices
 
+    storeWhenChanged();
     keepRefreshing(1000);
 
     // finds a device by sn
@@ -29,11 +31,44 @@ angular.module('webwalletApp')
       self.devices.splice(idx, 1);
     }
 
-    // compare two objects by a serial number
-    function compareBySn(d1, d2) { return d1.serialNumber === d2.serialNumber; }
+    // serialize a device list
+    function serialize() {
+      return self.devices.map(function (dev) {
+        return dev.serialize();
+      });
+    }
 
-    // compares a dev with a sn
-    function compareDeviceWithSn(d, sn) { return d.serialNumber === sn; }
+    // deserialize a device list
+    function deserialize(data) {
+      return data.map(function (item) {
+        return TrezorDevice.deserialize(item);
+      });
+    }
+
+    // takes serialized device list, puts it to storage
+    function store(data) {
+      storage[STORAGE_DEVICES] = JSON.stringify(data);
+    }
+
+    // loads a serialized device list from storage
+    function restore() {
+      return storage[STORAGE_DEVICES]
+        ? JSON.parse(storage[STORAGE_DEVICES])
+        : [];
+    }
+
+    // watches the device list and persist it to storage on change
+    function storeWhenChanged() {
+      $rootScope.$watch(
+        function () {
+          return serialize(self.devices);
+        },
+        function (data) {
+          store(data);
+        },
+        true // deep compare
+      );
+    }
 
     // starts auto-refreshing the device list
     function keepRefreshing(n) {
@@ -99,5 +134,11 @@ angular.module('webwalletApp')
         removed: utils.difference(xs, ys, compareBySn)
       };
     }
+
+    // compare two objects by a serial number
+    function compareBySn(d1, d2) { return d1.serialNumber === d2.serialNumber; }
+
+    // compares a dev with a sn
+    function compareDeviceWithSn(d, sn) { return d.serialNumber === sn; }
 
   });

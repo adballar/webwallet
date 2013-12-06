@@ -12,6 +12,25 @@ angular.module('webwalletApp')
       this._sessionPromise = null;
     }
 
+    TrezorDevice.deserialize = function (data) {
+      var dev = new TrezorDevice(data.serialNumber);
+
+      dev.accounts = data.accounts;
+      dev.label = data.label;
+
+      return dev;
+    };
+
+    TrezorDevice.prototype.serialize = function () {
+      return {
+        label: this.label,
+        serialNumber: this.serialNumber,
+        accounts: this.accounts.map(function (acc) {
+          return acc.serialize();
+        })
+      };
+    };
+
     TrezorDevice.prototype.account = function (id) {
       return utils.find(this.accounts, id, function (account, id) {
         return account.id === id;
