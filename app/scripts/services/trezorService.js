@@ -32,8 +32,8 @@ angular.module('webwalletApp')
     }
 
     // serialize a device list
-    function serialize() {
-      return self.devices.map(function (dev) {
+    function serialize(devices) {
+      return devices.map(function (dev) {
         return dev.serialize();
       });
     }
