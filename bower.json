@@ -11,7 +11,8 @@
     "angular-cookies": "~1.2.0",
     "angular-sanitize": "~1.2.0",
     "angular-route": "~1.2.0",
-    "trezor.js": "trezor/trezor.js"
+    "trezor.js": "trezor/trezor.js",
+    "bootstrap-slider": "seiyria/bootstrap-slider#~1.9.0"
   },
   "devDependencies": {
     "angular-mocks": "~1.2.0",

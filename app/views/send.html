@@ -6,17 +6,26 @@
 </ol>
 
 <form class="form-horizontal">
+
 	<div class="form-group">
-		<label for="amount" class="control-label col-sm-2">{{account.cointype}}:</label>
+		<label for="amount" class="control-label col-sm-2">Send:</label>
 		<div class="col-sm-3">
-			<input id="amount" class="form-control" type="text">
+			<input id="amount" class="form-control" type="text"> {{account.cointype}}
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label for="address" class="control-label col-sm-2">Address:</label>
+		<div class="col-sm-6">
+			<input id="address" class="form-control" type="text">
 		</div>
 	</div>
 
 	<div class="form-group">
 		<div class="col-sm-offset-2 col-sm-10">
 			<button type="submit" class="btn btn-primary">Send</button>
-			<a href="#/device/{{device.serialNumber}}/account/{{account.id}}" class="btn btn-default">Cancel</a>
+			<a href="#/device/{{device.serialNumber}}/account/{{account.id}}" class="btn btn-link">Cancel</a>
 		</div>
 	</div>
+
 </form>

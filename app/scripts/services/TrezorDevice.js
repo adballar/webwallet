@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('webwalletApp')
-  .factory('TrezorDevice', function (trezor, utils, $q) {
+  .factory('TrezorDevice', function (trezor, utils, DeviceAccount, $q) {
 
     function TrezorDevice(serialNumber) {
       this.serialNumber = serialNumber;
       this.accounts = null;
       this.label = null;
       this._desc = null;
+      this._features = null;
       this._loading = null;
       this._sessionPromise = null;
     }
@@ -15,8 +16,10 @@ angular.module('webwalletApp')
     TrezorDevice.deserialize = function (data) {
       var dev = new TrezorDevice(data.serialNumber);
 
-      dev.accounts = data.accounts;
       dev.label = data.label;
+      dev.accounts = (data.accounts || []).map(function (item) {
+        return DeviceAccount.deserialize(item);
+      });
 
       return dev;
     };
@@ -25,7 +28,7 @@ angular.module('webwalletApp')
       return {
         label: this.label,
         serialNumber: this.serialNumber,
-        accounts: this.accounts.map(function (acc) {
+        accounts: (this.accounts || []).map(function (acc) {
           return acc.serialize();
         })
       };
@@ -37,21 +40,25 @@ angular.module('webwalletApp')
       });
     };
 
-    TrezorDevice.prototype.status = function() {
+    TrezorDevice.prototype.status = function () {
       if (this._loading) return 'loading';
       if (this._desc) return 'connected';
       return 'disconnected';
     };
 
-    TrezorDevice.prototype.is = function(status) {
+    TrezorDevice.prototype.is = function (status) {
       return this.status() === status;
     };
 
-    TrezorDevice.prototype.connect = function(desc) {
+    TrezorDevice.prototype.initialized = function () {
+      return this._features && this._features.mpk_hash;
+    };
+
+    TrezorDevice.prototype.connect = function (desc) {
       this._desc = desc;
     };
 
-    TrezorDevice.prototype.disconnect = function() {
+    TrezorDevice.prototype.disconnect = function () {
       this._closeSession();
       this._desc = null;
     };
@@ -77,15 +84,18 @@ angular.module('webwalletApp')
           });
 
       function initialize() {
-        return self.communicate().then(function(session) {
+        return self.communicate().then(function (session) {
           return session.initialize();
         });
       }
     };
 
     TrezorDevice.prototype._setup = function (features) {
+      this._features = features;
       this.label = features.settings.label;
-      this.accounts = [];
+      this.accounts = [
+        new DeviceAccount('1')
+      ];
     };
 
     TrezorDevice.prototype._openSession = function () {
@@ -93,8 +103,13 @@ angular.module('webwalletApp')
           self = this;
 
       trezor.open(this._desc, {
-        openSuccess: dfd.resolve,
-        openError: dfd.reject,
+        openSuccess: function (session) {
+          dfd.resolve(session);
+        },
+        openError: function (err) {
+          dfd.reject(err);
+          self._sessionPromise = null;
+        },
         close: function () {
           self._sessionPromise = null; // re-open session on next attempt
         }

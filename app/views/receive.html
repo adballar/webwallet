@@ -1,6 +1,21 @@
 <ol class="breadcrumb">
-	<li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
-	<li><a ng-href="#/device/{{device.serialNumber}}/account/{{account.id}}"
-		>{{account.label || 'Account #'+account.id}}</a></li>
-	<li class="active">Receive</li>
+  <li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.serialNumber}}/account/{{account.id}}"
+    >{{account.label || 'Account #'+account.id}}</a></li>
+  <li class="active">Receive</li>
 </ol>
+
+<ul class="list-group">
+  <li class="list-group-item" ng-repeat="addr in account.addresses()">
+    {{addr}}
+  </li>
+</ul>
+
+<form class="form-inline">
+  <div class="form-group">
+    <input type="text" class="form-control" size="2" value="10">
+  </div>
+  <div class="form-group">
+    <button type="button" class="btn btn-default">More please</button>
+  </div>
+</form>

@@ -34,9 +34,9 @@
   padding: 20px;
 }
 
-.breadcrumb {
+/*.breadcrumb {
   display: none;
-}
+}*/
 
 /* Layout, header, footer */
 
@@ -55,7 +55,6 @@
 }
 
 .page-content {
-  padding-top: 10px;
 }
 
 .page-footer {
@@ -87,4 +86,22 @@
 .dev-status .glyphicon {
   height: 20px;
   margin-top: -2px;
+}
+
+/* Transaction list */
+
+.txlist-tx {
+  cursor: pointer;
+}
+
+/* Device setup */
+
+.devsetup-seedsize {
+  margin-top: 10px;
+}
+
+.devsetup-seedsize-label {
+  display: block;
+  text-transform: uppercase;
+  font-size: 10px;
 }

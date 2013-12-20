@@ -7,21 +7,33 @@
 </div>
 
 <fieldset ng-disabled="!device.is('connected')">
-  <ul class="list-unstyled">
+  <p ng-show="!device.initialized()">
+    <a ng-show="!device.initialized()"
+       ng-href="#/device/{{device.serialNumber}}/setup" class="btn btn-primary"
+      ><span class="glyphicon glyphicon-cog"></span> Setup device</a>
+  </p>
+  <ul class="list-unstyled"
+      ng-show="!device.initialized()">
     <li>
-      <a ng-href="#/device/{{device.serialNumber}}/setup" class="btn btn-link"
-        ><span class="glyphicon glyphicon-cog"></span> Setup device</a>
-      <small class="text-muted">- Configure label and other options</small>
+      <a ng-href="#/device/{{device.serialNumber}}/recovery"
+        >Seed recovery</a>
+      <small class="text-muted">- recover existing seed to a new device</small>
     </li>
+    <li>
+      <a ng-href="#/device/{{device.serialNumber}}/import"
+        >Import seed</a>
+      <small class="text-muted">- for exports only!</small>
+    </li>
+  </ul>
+  <ul class="list-unstyled"
+      ng-show="device.initialized()">
     <li>
       <a ng-href="#/device/{{device.serialNumber}}/wipe" class="btn btn-link"
         ><span class="glyphicon glyphicon-warning-sign"></span> Wipe device</a>
-      <small class="text-muted">- Delete all data and reset to factory settings</small>
-    </li>
-    <li>
-      <a href="" ng-click="forget(device)" class="btn btn-link"
-        ><span class="glyphicon glyphicon-off"></span> Forget device</a>
-      <small class="text-muted">- Remove from my wallet</small>
+      <small class="text-muted">Delete all data and reset to factory settings</small>
     </li>
   </ul>
 </fieldset>
+
+<a href="" ng-click="forget(device)" class="text-muted pull-right"
+  >Forget device</a>

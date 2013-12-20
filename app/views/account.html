@@ -16,16 +16,29 @@
   </p>
 </fieldset>
 
-<table class="table table-striped table-hover">
+<table class="txlist table table-striped">
   <tbody>
-    <tr ng-repeat="tx in account.transactions">
-      <td>{{tx.date | date:'short'}}</td>
-      <td>{{tx.comment || tx.address}}</td>
-      <td class="text-right"
+    <tr class="txlist-tx"
+        ng-click="tx.active = !tx.active"
+        ng-repeat-start="tx in account.transactions">
+      <td class="txlist-date">{{tx.date | date:'short'}}</td>
+      <td class="txlist-comment" ng-if="tx.comment">"{{tx.comment}}"</td>
+      <td class="txlist-address text-muted" ng-if="!tx.comment">{{tx.address}}</td>
+      <td class="txlist-amount text-right"
           ng-class="{ 'text-success': tx.amount > 0,
                       'text-danger': tx.amount < 0 }"
         >{{tx.amount | sign}}{{tx.amount | amount:account | number:8}}</td>
-      <td>{{tx.ballance | amount:account | number:8}}</td>
+      <td class="txlist-ballance text-right">{{tx.ballance | amount:account | number:8}}</td>
+    </tr>
+    <tr class="txlist-detail"
+        ng-show="tx.active"
+        ng-repeat-end>
+      <td colspan="5">
+        <dl>
+          <dt>Address:</dt>
+          <dd>{{tx.address}}</dd>
+        </dl>
+      </td>
     </tr>
   </tbody>
 </table>

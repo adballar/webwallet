@@ -13,6 +13,8 @@ angular.module('webwalletApp')
     storeWhenChanged();
     keepRefreshing(1000);
 
+    // public functions
+
     // finds a device by sn
     function getDevice(sn) {
       return utils.find(self.devices, sn, compareDeviceWithSn);
@@ -37,6 +39,8 @@ angular.module('webwalletApp')
         return dev.serialize();
       });
     }
+
+    // private functions
 
     // deserialize a device list
     function deserialize(data) {

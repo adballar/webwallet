@@ -37,6 +37,7 @@ angular.module('webwalletApp', [
       });
   });
 
+// load trezor plugin and bootstrap application
 angular.element(document).ready(function () {
   trezor.load(
     function (tzr) {
