@@ -1,78 +1,86 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
   <li class="active">Setup</li>
 </ol>
 
+<div ng-if="!device.is('connected')" class="alert alert-danger">
+  <h4>Sorry!</h4> Please connect your device to access this section.
+</div>
+
 <div class="row">
-  <form class="devsetup col-md-6">
+  <fieldset ng-disabled="!device.is('connected')">
+    <form class="devsetup col-md-6">
 
-    <div class="form-group">
-      <label for="language" class="sr-only">Language</label>
-      <select name="langauge" id="langauge" class="form-control"
-              ng-model="settings.language">
-        <option value="">Select language</option>
-        <option ng-value="l.code"
-                ng-repeat="l in languages">{{l.title}}</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label for="language" class="sr-only">Language</label>
+        <select name="langauge" id="langauge" class="form-control"
+                ng-model="settings.language"
+                ng-options="k as v for (k, v) in { english: 'English' }">
+          <option value="">Select language</option>
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="currency" class="sr-only">Currency</label>
-      <select name="currency" id="currency" class="form-control"
-              ng-model="settings.currency">
-        <option value="">Select currency</option>
-        <option ng-value="c.code"
-                ng-repeat="c in currencies">{{c.title}}</option>
-      </select>
-    </div>
+      <div class="form-group">
+        <label for="currency" class="sr-only">Currency</label>
+        <select name="currency" id="currency" class="form-control"
+                ng-model="settings.currency"
+                ng-options="c.coin_shortcut as c.coin_name for c in device.features.coins">
+          <option value="">Select currency</option>
+        </select>
+      </div>
 
-    <div class="form-group">
-      <label for="label" class="control-label">Device label</label>
-      <input type="text" name="label" id="label" class="form-control"
-             placeholder="My TREZOR"
-             ng-model="settings.label">
-    </div>
+      <div class="form-group">
+        <label for="label" class="control-label">Device label</label>
+        <input type="text" name="label" id="label" class="form-control"
+               placeholder="My TREZOR"
+               ng-model="settings.label">
+      </div>
 
-    <div class="form-group">
-      <label for="seedsize" class="control-label">Recovery seed stregth</label>
-      <input type="text" name="seedsize" id="seedsize"
-             class="form-control input-slider"
-             data-slider-value="18"
-             data-slider-min="12"
-             data-slider-max="24"
-             data-slider-step="6"
-             ng-model="settings.seedsize">
-      <div class="row devsetup-seedsize">
-        <div class="col-sm-4 text-left">
-          12 words <span class="devsetup-seedsize-label">Good enough</span>
-        </div>
-        <div class="col-sm-4 text-center">
-          18 words <span class="devsetup-seedsize-label">Even stronger</span>
-        </div>
-        <div class="col-sm-4 text-right">
-          24 words <span class="devsetup-seedsize-label">Paranoid</span>
+      <div class="form-group">
+        <label for="strength" class="control-label">Recovery seed stregth</label>
+        <input type="text" name="strength" id="strength"
+               class="form-control"
+               slider
+               data-slider-value="192"
+               data-slider-min="128"
+               data-slider-max="256"
+               data-slider-step="64"
+               ng-model="settings.strength">
+        <div class="row devsetup-strength">
+          <div class="col-sm-4 text-left">
+            12 words <span class="devsetup-strength-label">Good enough</span>
+          </div>
+          <div class="col-sm-4 text-center">
+            18 words <span class="devsetup-strength-label">Even stronger</span>
+          </div>
+          <div class="col-sm-4 text-right">
+            24 words <span class="devsetup-strength-label">Paranoid</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="passphrase" class="control-label">Passphrase</label>
-      <input type="password" name="passphrase" id="passphrase"
-             class="form-control"
-             ng-model="settings.passphrase">
-    </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="passphrase-protection"
+                 ng-model="settings.passphrase_protection"> Passphrase protection
+        </label>
+      </div>
 
-    <div class="checkbox">
-      <label>
-        <input type="checkbox" name="pin-protection"
-               ng-model="settings.pinProtection"> PIN protection
-      </label>
-    </div>
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="pin-protection"
+                 ng-init="settings.pin_protection = true"
+                 ng-model="settings.pin_protection"> PIN protection
+        </label>
+      </div>
 
-    <div class="form-group">
-      <button type="submit" class="btn btn-primary"
-              ng-click="setup()">Continue</button>
-    </div>
+      <div class="form-group">
+        <button class="btn btn-primary"
+                ng-click="setup(device, settings)">Continue</button>
+        <a href="#/device/{{device.id}}"
+           class="btn btn-link">Cancel</a>
+      </div>
 
-  </form>
+    </form>
+  </fieldset>
 </div>
