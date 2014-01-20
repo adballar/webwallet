@@ -25,7 +25,10 @@
 .form-control,
 .btn,
 .alert,
-.breadcrumb {
+.breadcrumb,
+.btn-group-lg > .btn,
+.list-group-item:first-child,
+.list-group-item:last-child {
   border-radius: 0;
 }
 
@@ -48,6 +51,7 @@
 .page-header .navbar-brand {
   padding: 0;
   padding-left: 30px;
+  margin-top: 4px;
 }
 
 .page-middle {
@@ -88,19 +92,59 @@
   margin-top: -2px;
 }
 
+.dev-acc-info {
+  white-space: nowrap;
+}
+
 /* Transaction list */
 
 .txlist-tx {
   cursor: pointer;
 }
 
+.table-hover .txlist-detail:hover td {
+  background: transparent !important;
+}
+
+.txlist-detail {
+}
+
+.txlist-detail dl {
+  margin-bottom: 0;
+}
+
+.txlist-detail td {
+  padding: 10px 12px !important;
+}
+
+.txlist-detail dt {
+  font-weight: normal;
+  opacity: 0.7;
+}
+
+.txlist-hash {
+  font-family: monospace;
+}
+
+/* Device send/receive nav */
+
+.nav-sendrecv {
+}
+
+.nav-sendrecv-active .btn {
+  opacity: 0.5;
+}
+
+.nav-sendrecv-active .btn.active {
+}
+
 /* Device setup */
 
-.devsetup-seedsize {
+.devsetup-strength {
   margin-top: 10px;
 }
 
-.devsetup-seedsize-label {
+.devsetup-strength-label {
   display: block;
   text-transform: uppercase;
   font-size: 10px;
