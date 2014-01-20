@@ -7,15 +7,15 @@
 </div>
 
 <fieldset ng-disabled="!device.is('connected')">
-  <p ng-show="!device.initialized()">
-    <a ng-show="!device.initialized()"
-       ng-href="#/device/{{device.serialNumber}}/setup" class="btn btn-primary"
+  <p ng-show="!device.hasKey()">
+    <a ng-show="!device.hasKey()"
+       ng-href="#/device/{{device.id}}/setup" class="btn btn-primary"
       ><span class="glyphicon glyphicon-cog"></span> Setup device</a>
   </p>
   <ul class="list-unstyled"
-      ng-show="!device.initialized()">
+      ng-show="!device.hasKey()">
     <li>
-      <a ng-href="#/device/{{device.serialNumber}}/recovery"
+      <a ng-href="#/device/{{device.id}}/recovery"
         >Seed recovery</a>
       <small class="text-muted">- recover existing seed to a new device</small>
     </li>
@@ -26,9 +26,9 @@
     </li>
   </ul>
   <ul class="list-unstyled"
-      ng-show="device.initialized()">
+      ng-show="device.hasKey()">
     <li>
-      <a ng-href="#/device/{{device.serialNumber}}/wipe" class="btn btn-link"
+      <a ng-href="#/device/{{device.id}}/wipe" class="btn btn-link"
         ><span class="glyphicon glyphicon-warning-sign"></span> Wipe device</a>
       <small class="text-muted">Delete all data and reset to factory settings</small>
     </li>

@@ -1,31 +1,48 @@
 <ol class="breadcrumb">
-	<li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
-	<li><a ng-href="#/device/{{device.serialNumber}}/account/{{account.id}}"
-		>{{account.label || 'Account #'+account.id}}</a></li>
-	<li class="active">Send</li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}/account/{{account.id}}"
+    >{{account.label()}}</a></li>
+  <li class="active">Send</li>
 </ol>
+
+<p class="nav-sendrecv nav-sendrecv-active btn-group btn-group-lg">
+  <a class="btn active"
+     href="#/device/{{device.id}}/account/{{account.id}}/send"
+     ng-disabled="!device.is('connected')">
+    <span class="glyphicon glyphicon-cloud-upload"></span> Send
+  </a>
+  <a class="btn"
+     href="#/device/{{device.id}}/account/{{account.id}}/receive">
+    <span class="glyphicon glyphicon-cloud-download"></span> Receive
+  </a>
+</p>
 
 <form class="form-horizontal">
 
-	<div class="form-group">
-		<label for="amount" class="control-label col-sm-2">Send:</label>
-		<div class="col-sm-3">
-			<input id="amount" class="form-control" type="text"> {{account.cointype}}
-		</div>
-	</div>
+  <div class="form-group">
+    <label for="amount" class="control-label col-sm-2">Send {{account.coin}}:</label>
+    <div class="col-sm-3">
+      <input id="amount" class="form-control" type="text">
+    </div>
+    <label for="fee" class="control-label col-sm-1">Fee:</label>
+    <div class="col-sm-2">
+      <input id="fee" class="form-control" type="text" value="0.01" readonly>
+    </div>
+  </div>
 
-	<div class="form-group">
-		<label for="address" class="control-label col-sm-2">Address:</label>
-		<div class="col-sm-6">
-			<input id="address" class="form-control" type="text">
-		</div>
-	</div>
+  <div class="form-group">
+    <label for="address" class="control-label col-sm-2">Address:</label>
+    <div class="col-sm-6">
+      <input id="address" class="form-control" type="text">
+    </div>
+  </div>
 
-	<div class="form-group">
-		<div class="col-sm-offset-2 col-sm-10">
-			<button type="submit" class="btn btn-primary">Send</button>
-			<a href="#/device/{{device.serialNumber}}/account/{{account.id}}" class="btn btn-link">Cancel</a>
-		</div>
-	</div>
+  <div class="form-group">
+    <div class="col-sm-offset-2 col-sm-10">
+      <button type="submit" class="btn btn-primary">Send</button>
+      <a href="#/device/{{device.id}}/account/{{account.id}}"
+         class="btn btn-link">Cancel</a>
+    </div>
+  </div>
 
 </form>
