@@ -17,12 +17,12 @@ angular.module('webwalletApp')
 
     // finds a device by sn
     function getDevice(sn) {
-      return utils.find(self.devices, sn, compareDeviceWithSn);
+      return utils.find(self.devices, sn, compareDeviceWithId);
     }
 
     // finds a device by sn and removes it from the list and the storage
     function forgetDevice(sn) {
-      var idx = utils.findIndex(self.devices, sn, compareDeviceWithSn),
+      var idx = utils.findIndex(self.devices, sn, compareDeviceWithId),
           dev;
 
       if (idx >= 0)
@@ -90,22 +90,24 @@ angular.module('webwalletApp')
     // marks the device of the given descriptor as connected, adding it to the
     // device list if not present and loading it
     function connect(desc) {
-      var dev = utils.find(self.devices, desc, compareBySn);
+      var dev = utils.find(self.devices, desc, compareById);
 
       if (!dev) {
-        dev = new TrezorDevice(desc.serialNumber);
+        dev = new TrezorDevice(desc.id);
         self.devices.push(dev);
       }
 
       if (!dev.is('connected')) {
         dev.connect(desc);
-        dev.initialize();
+        dev.initialize().then(function () {
+          dev.refresh();
+        });
       }
     }
 
     // marks a device of the given descriptor as disconnected
     function disconnect(desc) {
-      var dev = utils.find(self.devices, desc, compareBySn);
+      var dev = utils.find(self.devices, desc, compareById);
 
       if (dev)
         dev.disconnect();
@@ -134,15 +136,15 @@ angular.module('webwalletApp')
     // computes added and removed device descriptors in current tick
     function descriptorDelta(xs, ys) {
       return {
-        added: utils.difference(ys, xs, compareBySn),
-        removed: utils.difference(xs, ys, compareBySn)
+        added: utils.difference(ys, xs, compareById),
+        removed: utils.difference(xs, ys, compareById)
       };
     }
 
-    // compare two objects by a serial number
-    function compareBySn(d1, d2) { return d1.serialNumber === d2.serialNumber; }
+    // compare two objects by id
+    function compareById(a, b) { return a.id === b.id; }
 
-    // compares a dev with a sn
-    function compareDeviceWithSn(d, sn) { return d.serialNumber === sn; }
+    // compares a dev with an id
+    function compareDeviceWithId(d, id) { return d.id === id; }
 
   });
