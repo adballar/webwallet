@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module('webwalletApp', [
-  'ngCookies',
-  'ngResource',
-  'ngSanitize',
-  'ngRoute'
+  'ngRoute',
+  'ngAnimate',
+  'ja.qr'
 ])
   .config(function ($routeProvider) {
     $routeProvider
