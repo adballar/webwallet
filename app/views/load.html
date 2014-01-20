@@ -1,0 +1,58 @@
+<ol class="breadcrumb">
+  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li class="active">Import private key</li>
+</ol>
+
+<div ng-if="!device.is('connected')" class="alert alert-danger">
+  <h4>Sorry!</h4> Please connect your device to access this section.
+</div>
+
+<div class="row">
+  <fieldset ng-disabled="!device.is('connected')">
+      <form class="devload col-md-6">
+
+        <div class="form-group">
+          <label for="language" class="sr-only">Language</label>
+          <select name="langauge" id="langauge" class="form-control"
+                  ng-model="settings.language"
+                  ng-options="k as v for (k, v) in { english: 'English' }">
+            <option value="">Select language</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="label" class="control-label">Device label</label>
+          <input type="text" name="label" id="label" class="form-control"
+                 placeholder="My TREZOR"
+                 ng-model="settings.label">
+        </div>
+
+        <div class="form-group">
+          <label for="xprv" class="control-label">Private key</label>
+          <textarea name="xprv" id="xprv" class="form-control"
+                    ng-model="settings.xprv"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="pin" class="control-label">PIN</label>
+          <input type="text" name="pin" id="pin" class="form-control"
+                 ng-model="settings.pin">
+        </div>
+
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="passphrase-protection"
+                   ng-model="settings.passphrase_protection"> Passphrase protection
+          </label>
+        </div>
+
+        <div class="form-group">
+          <button class="btn btn-primary"
+                  ng-click="loadByXprv(device, settings)">Continue</button>
+          <a href="#/device/{{device.id}}"
+             class="btn btn-link">Cancel</a>
+        </div>
+
+      </form>
+  </fieldset>
+</div>
