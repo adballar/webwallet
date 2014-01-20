@@ -1,21 +1,59 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
-  <li><a ng-href="#/device/{{device.serialNumber}}/account/{{account.id}}"
-    >{{account.label || 'Account #'+account.id}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}/account/{{account.id}}"
+    >{{account.label()}}</a></li>
   <li class="active">Receive</li>
 </ol>
 
-<ul class="list-group">
-  <li class="list-group-item" ng-repeat="addr in account.addresses()">
-    {{addr}}
-  </li>
-</ul>
+<p class="nav-sendrecv nav-sendrecv-active btn-group btn-group-lg">
+  <a class="btn"
+     href="#/device/{{device.id}}/account/{{account.id}}/send"
+     ng-disabled="!device.is('connected')">
+    <span class="glyphicon glyphicon-cloud-upload"></span> Send
+  </a>
+  <a class="btn active"
+     href="#/device/{{device.id}}/account/{{account.id}}/receive">
+    <span class="glyphicon glyphicon-cloud-download"></span> Receive
+  </a>
+</p>
 
-<form class="form-inline">
-  <div class="form-group">
-    <input type="text" class="form-control" size="2" value="10">
+<div class="row">
+
+  <div class="col-md-6">
+    <h5>Address</h5>
+
+    <div class="list-group">
+      <div ng-repeat-start="address in addresses"
+           ng-if="$index == lookAhead">
+        <hr>
+        <p class="text-danger">
+          <strong>Caution:</strong>
+          You won't be able to see the transactions of the following addresses until
+          some of the previously generated addresses are used in a transaction.
+        </p>
+      </div>
+
+      <a href="" class="list-group-item"
+         ng-class="{ active: activeAddressIndex === $index }"
+         ng-click="activate($index)"
+         ng-repeat-end>
+        {{address}}
+      </a>
+    </div>
+
+    <form class="form-inline">
+      <div class="form-group">
+        <button type="button" class="btn btn-default"
+                ng-click="more()">
+          <span class="glyphicon glyphicon-plus"></span> More please</button>
+      </div>
+    </form>
   </div>
-  <div class="form-group">
-    <button type="button" class="btn btn-default">More please</button>
+
+  <div class="col-md-6">
+    <h5>QR Code</h5>
+
+    <qr size="335" text="'bitcoin:' + addresses[activeAddressIndex]"></qr>
   </div>
-</form>
+
+</div>
