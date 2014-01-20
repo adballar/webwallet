@@ -39,13 +39,14 @@ angular.module('webwalletApp', [
 // load trezor plugin and bootstrap application
 angular.element(document).ready(function () {
   trezor.load(
-    function (tzr) {
-      angular.module('webwalletApp').value('trezor', tzr);
+    function (trezorObject) {
+      angular.module('webwalletApp').value('trezorApi', trezor);
+      angular.module('webwalletApp').value('trezor', trezorObject);
       angular.bootstrap(document, ['webwalletApp']);
     },
     function (err, install) {
       if (install) install();
     },
-    { configUrl: 'http://127.0.0.1:9000/config_signed.bin' }
+    { configUrl: '/config_signed.bin' }
   );
 });
