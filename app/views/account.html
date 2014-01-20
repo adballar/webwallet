@@ -1,42 +1,51 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.serialNumber}}">{{device.label || 'My TREZOR'}}</a></li>
-  <li class="active">{{account.label || 'Account #'+account.id}}</li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li class="active">{{account.label()}}</li>
 </ol>
 
-<fieldset ng-disabled="!device.is('connected')">
-  <p class="btn-group btn-group-lg">
-    <a class="btn"
-       href="#/device/{{device.serialNumber}}/account/{{account.id}}/send">
-      <span class="glyphicon glyphicon-cloud-upload"></span> Send
-    </a>
-    <a class="btn"
-       href="#/device/{{device.serialNumber}}/account/{{account.id}}/receive">
-      <span class="glyphicon glyphicon-cloud-download"></span> Receive
-    </a>
-  </p>
-</fieldset>
+<p class="nav-sendrecv btn-group btn-group-lg">
+  <a class="btn"
+     href="#/device/{{device.id}}/account/{{account.id}}/send"
+     ng-disabled="!device.is('connected')">
+    <span class="glyphicon glyphicon-cloud-upload"></span> Send
+  </a>
+  <a class="btn"
+     href="#/device/{{device.id}}/account/{{account.id}}/receive">
+    <span class="glyphicon glyphicon-cloud-download"></span> Receive
+  </a>
+</p>
 
-<table class="txlist table table-striped">
+<table class="txlist table table-hover">
   <tbody>
     <tr class="txlist-tx"
         ng-click="tx.active = !tx.active"
         ng-repeat-start="tx in account.transactions">
-      <td class="txlist-date">{{tx.date | date:'short'}}</td>
-      <td class="txlist-comment" ng-if="tx.comment">"{{tx.comment}}"</td>
-      <td class="txlist-address text-muted" ng-if="!tx.comment">{{tx.address}}</td>
-      <td class="txlist-amount text-right"
-          ng-class="{ 'text-success': tx.amount > 0,
-                      'text-danger': tx.amount < 0 }"
-        >{{tx.amount | sign}}{{tx.amount | amount:account | number:8}}</td>
-      <td class="txlist-ballance text-right">{{tx.ballance | amount:account | number:8}}</td>
+      <td class="txlist-date">
+        {{tx.timestamp | date:'short'}}
+      </td>
+      <td class="txlist-comment" ng-if="tx.comment">
+        "{{tx.comment}}"
+      </td>
+      <td class="txlist-address text-muted" ng-if="!tx.comment">
+        {{tx.analysis.addr.toString()}}
+      </td>
+      <td class="txlist-amount"
+          ng-class="{ 'text-success': tx.analysis.impact.sign > 0,
+                      'text-danger': tx.analysis.impact.sign < 0 }">
+        {{tx.analysis.impact.sign | sign}}{{tx.analysis.impact.value | amount}}
+      </td>
+      <td class="txlist-ballance">
+        {{tx.balance | amount}}
+      </td>
     </tr>
     <tr class="txlist-detail"
         ng-show="tx.active"
+        ng-animate
         ng-repeat-end>
       <td colspan="5">
         <dl>
-          <dt>Address:</dt>
-          <dd>{{tx.address}}</dd>
+          <dt>Tx hash:</dt>
+          <dd class="txlist-hash">{{tx.hash}}</dd>
         </dl>
       </td>
     </tr>
