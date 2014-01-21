@@ -11,7 +11,8 @@ angular.module('webwalletApp')
     self.devices = deserialize(restore()); // the list of available devices
 
     storeWhenChanged();
-    keepRefreshing(1000);
+    keepUpdating(1000);
+    keepRefreshing();
 
     // public functions
 
@@ -30,6 +31,7 @@ angular.module('webwalletApp')
       if (!dev) return;
 
       dev.disconnect();
+      dev.unsubscribe();
       self.devices.splice(idx, 1);
     }
 
@@ -74,8 +76,8 @@ angular.module('webwalletApp')
       );
     }
 
-    // starts auto-refreshing the device list
-    function keepRefreshing(n) {
+    // starts auto-updating the device list
+    function keepUpdating(n) {
       var tick = utils.tick(n),
           desc = progressWithConnected(tick),
           delta = progressWithDescriptorDelta(desc);
@@ -84,6 +86,15 @@ angular.module('webwalletApp')
       delta.then(null, null, function (dd) {
         dd.added.forEach(connect);
         dd.removed.forEach(disconnect);
+      });
+    }
+
+    // start auto-refreshing the data in the device list
+    function keepRefreshing() {
+      // initial refresh
+      self.devices.forEach(function (dev) {
+        dev.refresh();
+        dev.subscribe();
       });
     }
 

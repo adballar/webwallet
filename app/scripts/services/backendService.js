@@ -1,14 +1,31 @@
 'use strict';
 
 angular.module('webwalletApp')
-  .service('backendService', function BackendService(utils, $http) {
+  .value('atmosphere', window.jQuery.atmosphere);
+
+
+angular.module('webwalletApp')
+  .config(['$httpProvider', function ($httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+  }]);
+
+angular.module('webwalletApp')
+  .service('backendService', function BackendService(utils, atmosphere, $http, $log) {
 
     var self = this,
-        API_URL = 'http://test-api.bitsofproof.com:8080/trezor';
+        endpoint = 'http://test-api.bitsofproof.com:8080';
+
+    function api(url) {
+      return endpoint + '/trezor/' + url;
+    }
+
+    function ws(url) {
+      return endpoint + '/ws/' + url;
+    }
 
     self.register = function (node) {
-      var url = API_URL + '/register',
-          xpub = utils.node2xpub(node),
+      var xpub = utils.node2xpub(node),
           data = {
             after: '2013-12-01',
             publicMaster: xpub,
@@ -16,32 +33,70 @@ angular.module('webwalletApp')
             firstIndex: 0
           };
 
-      console.log('[backend] Registering public key', xpub);
+      $log.debug('Registering public key', xpub);
       return self.deregister(node).then(function () {
-        return $http.post(url, data);
+        return $http.post(api('register'), data);
       });
     };
 
     self.deregister = function (node) {
-      var xpub = utils.node2xpub(node),
-          url = API_URL + '/' + xpub;
+      var xpub = utils.node2xpub(node);
 
-      return $http.delete(url);
+      $log.debug('Deregistering public key', xpub);
+      return $http.delete(api(xpub));
     };
 
-    self.balance = function (node, details) {
-      var xpub = utils.node2xpub(node),
-          url = API_URL + '/' + xpub + (details ? '?details' : '');
+    self.balance = function (node) {
+      var xpub = utils.node2xpub(node);
 
-      console.log('[backend] Requesting balance for', xpub);
-      return $http.get(url);
+      $log.debug('Requesting balance for', xpub);
+      return $http.get(api(xpub + '?details'));
     };
 
     self.transactions = function (node) {
-      var xpub = utils.node2xpub(node),
-          url = API_URL + '/' + xpub + '/transactions';
+      var xpub = utils.node2xpub(node);
 
-      return $http.get(url);
+      $log.debug('Requesting tx history for', xpub);
+      return $http.get(api(xpub + '/transactions'));
+    };
+
+    self.subscribe = function (node, callback) {
+      var xpub = utils.node2xpub(node),
+          req = new atmosphere.AtmosphereRequest();
+
+      req.url = ws(xpub);
+      req.contentType = 'application/json';
+      req.transport = 'websocket';
+      req.fallbackTransport = 'long-polling';
+      req.trackMessageLength = true;
+      req.enableXDR = true;
+
+      req.onClientTimeout = function (req) {
+          $log.error('WS client timed out');
+      };
+      req.onTransportFailure = function (err, req) {
+          $log.error('WS request failure:', err);
+      };
+      req.onError = function (res) {
+          $log.error('WS error:', res);
+      };
+      req.onReconnect = function (req, res) {
+          $log.info('WS client reconnected');
+      };
+
+      req.onMessage = function (res) {
+          var msg = res.responseBody,
+              ret;
+          try {
+              ret = JSON.parse(msg);
+          } catch (e) {
+              $log.error('Error parsing JSON response:', msg);
+          }
+          if (ret) callback(ret);
+      };
+
+      $log.debug('Subscribing to balance updates for', xpub);
+      atmosphere.subscribe(req);
     };
 
   });

@@ -54,6 +54,22 @@ angular.module('webwalletApp')
       return addr;
     };
 
+    TrezorAccount.prototype.subscribe = function () {
+      var self = this;
+
+      this._socket = backendService.subscribe(this.node, process);
+      this._changeSocket = backendService.subscribe(this.changeNode, process);
+
+      function process(data) {
+        console.log(data);
+      }
+    };
+
+    TrezorAccount.prototype.unsubscribe = function () {
+      if (this._socket) this._socket.unsubscribe();
+      if (this._changeSocket) this._changeSocket.unsubscribe();
+    };
+
     TrezorAccount.prototype.reqRegister = function () {
       var self = this,
           pr1 = backendService.register(this.node),

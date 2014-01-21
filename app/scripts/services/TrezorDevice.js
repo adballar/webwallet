@@ -96,20 +96,32 @@ angular.module('webwalletApp')
     };
 
     TrezorDevice.prototype.refresh = function () {
-      this.accounts.forEach(function (account) {
-        account.reqBalance();
-        account.reqTransactions();
+      this.accounts.forEach(function (acc) {
+        acc.reqBalance();
+        acc.reqTransactions();
+      });
+    };
+
+    TrezorDevice.prototype.subscribe = function () {
+      this.accounts.forEach(function (acc) {
+        acc.subscribe();
+      });
+    };
+
+    TrezorDevice.prototype.unsubscribe = function () {
+      this.accounts.forEach(function (acc) {
+        acc.unsubscribe();
       });
     };
 
     TrezorDevice.prototype.addAccount = function () {
       var id = this.accounts.length,
-          account = this.createAccount(id);
+          acc = this.createAccount(id);
 
-      this.accounts.push(account);
-      account.reqRegister().then(function () {
-        account.reqBalance();
-        account.reqTransactions();
+      this.accounts.push(acc);
+      acc.reqRegister().then(function () {
+        acc.reqBalance();
+        acc.reqTransactions();
       });
     };
 
