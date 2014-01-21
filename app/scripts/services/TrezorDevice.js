@@ -9,8 +9,8 @@ angular.module('webwalletApp')
       this.features = null;
       this.node = null;
       this._desc = null;
-      this._loading = null;
       this._session = null;
+      this._loading = null;
     }
 
     TrezorDevice.deserialize = function (data) {
@@ -59,11 +59,12 @@ angular.module('webwalletApp')
 
     TrezorDevice.prototype.disconnect = function () {
       this._session.close();
+      this._session = null;
       this._desc = null;
     };
 
     TrezorDevice.prototype.hasKey = function () {
-      return this.features && this.features.mpk_hash;
+      return !!this.node;
     };
 
     TrezorDevice.prototype.initialize = function () {
@@ -83,15 +84,12 @@ angular.module('webwalletApp')
       });
 
       function initialize() {
-        return self._withSession().then(function (ses) {
-          return ses.initialize();
-        });
+        if (self._session) // returns falsey to cancel the trapolining
+          return self._session.initialize();
       }
 
       function getPublicKey() {
-        return self._withSession().then(function (ses) {
-          return ses.getPublicKey();
-        });
+        return self._session.getPublicKey();
       }
     };
 
@@ -138,29 +136,25 @@ angular.module('webwalletApp')
     };
 
     TrezorDevice.prototype.reset = function (settings) {
-      return this._withSession().then(function (ses) {
-        var sett = angular.copy(settings);
+      var sett = angular.copy(settings);
 
-        if (sett.label)
-          sett.label = utils.str2hex(sett.label.trim());
+      if (sett.label)
+        sett.label = utils.str2hex(sett.label.trim());
 
-        return ses.resetDevice(sett);
-      });
+      return this._session.resetDevice(sett);
     };
 
     TrezorDevice.prototype.loadByXprv = function (settings) {
-      return this._withSession().then(function (ses) {
-        var sett = angular.copy(settings);
+      var sett = angular.copy(settings);
 
-        if (sett.xprv)
-          sett.node = utils.xprv2node(sett.xprv);
-        delete sett.xprv;
+      if (sett.xprv)
+        sett.node = utils.xprv2node(sett.xprv);
+      delete sett.xprv;
 
-        if (sett.label)
-          sett.label = utils.str2hex(sett.label.trim());
+      if (sett.label)
+        sett.label = utils.str2hex(sett.label.trim());
 
-        return ses.loadDevice(sett);
-      });
+      return this._session.loadDevice(sett);
     };
 
     TrezorDevice.prototype._withLoading = function (fn) {
@@ -171,12 +165,6 @@ angular.module('webwalletApp')
 
       function start() { self._loading = true; }
       function end() { self._loading = false; }
-    };
-
-    TrezorDevice.prototype._withSession = function () {
-      var dfd = $q.defer();
-      dfd.resolve(this._session);
-      return dfd.promise;
     };
 
     return TrezorDevice;

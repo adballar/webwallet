@@ -29,7 +29,7 @@ angular.module('webwalletApp')
 // Utils module
 
 angular.module('webwalletApp')
-  .service('utils', function Utils(Bitcoin, $interval, $timeout) {
+  .service('utils', function Utils(Bitcoin, $q, $interval, $timeout) {
 
     //
     // str <-> bytes <-> hex
@@ -143,11 +143,17 @@ angular.module('webwalletApp')
     }
 
     // keeps calling fn while the returned promise is being rejected
+    // fn can cancel by returning falsey
     // if given delay, waits for delay msec before calling again
     // if given max, gives up after max attempts and rejects with
     // the latest error
     function endure(fn, delay, max) {
-      return fn().then(null, function (err) {
+      var pr = fn();
+
+      if (!pr)
+        return $q.reject('Cancelled');
+
+      return pr.then(null, function (err) {
 
         if (max !== undefined && max < 1) // we have no attempt left
           throw err;

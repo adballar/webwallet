@@ -85,6 +85,7 @@
               <a ng-href="#/device/{{device.id}}/account-add" class="btn btn-sm"
                  ng-class="{ active: isActive('/device/{{device.id}}/account-add') }"
                  ng-click="device.addAccount()"
+                 ng-disabled="!device.hasKey()"
                 ><span class="glyphicon glyphicon-plus"></span> Add account</a>
             </li>
           </ul>
