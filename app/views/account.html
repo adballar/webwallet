@@ -15,7 +15,12 @@
   </a>
 </p>
 
-<table class="txlist table table-hover">
+<p class="text-center text-muted h1"
+   ng-show="account.transactions == null">
+  <span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+</p>
+<table class="txlist table table-hover"
+       ng-show="account.transactions != null">
   <tbody>
     <tr class="txlist-tx"
         ng-click="tx.active = !tx.active"
