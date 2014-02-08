@@ -1,5 +1,5 @@
 <ol class="breadcrumb">
-  <li class="active">{{device.label || 'My TREZOR'}}</li>
+  <li class="active">{{device.label()}}</li>
 </ol>
 
 <div ng-if="!device.is('connected')" class="alert alert-danger">
@@ -7,33 +7,30 @@
 </div>
 
 <fieldset ng-disabled="!device.is('connected')">
+
   <p ng-show="!device.hasKey()">
-    <a ng-show="!device.hasKey()"
-       ng-href="#/device/{{device.id}}/setup" class="btn btn-primary"
+    <a class="btn btn-block btn-lg btn-primary"
+       ng-href="#/device/{{device.id}}/setup"
       ><span class="glyphicon glyphicon-cog"></span> Setup device</a>
   </p>
-  <ul class="list-unstyled"
-      ng-show="!device.hasKey()">
-    <li>
-      <a ng-href="#/device/{{device.id}}/recovery"
-        >Seed recovery</a>
-      <small class="text-muted">- recover existing seed to a new device</small>
-    </li>
-    <li>
-      <a ng-href="#/device/{{device.id}}/load"
-        >Import private key</a>
-      <small class="text-muted">- for exports only!</small>
-    </li>
-  </ul>
-  <ul class="list-unstyled"
-      ng-show="device.hasKey()">
-    <li>
-      <a ng-href="#/device/{{device.id}}/wipe" class="btn btn-link"
-        ><span class="glyphicon glyphicon-warning-sign"></span> Wipe device</a>
-      <small class="text-muted">Delete all data and reset to factory settings</small>
-    </li>
-  </ul>
+
+  <div class="list-group"
+       ng-show="!device.hasKey()">
+   <a class="list-group-item"
+      ng-href="#/device/{{device.id}}/recovery">Seed recovery</a>
+   <a class="list-group-item"
+      ng-href="#/device/{{device.id}}/load">Import seed</a>
+  </div>
+
+  <div class="list-group"
+       ng-show="device.hasKey()">
+    <a class="list-group-item"
+       ng-href="#/device/{{device.id}}/wipe"
+      >Wipe device</a>
+  </div>
+
 </fieldset>
 
-<a href="" ng-click="forget(device)" class="text-muted pull-right"
-  >Forget device</a>
+<a href="" class="text-muted pull-right"
+   ng-click="forget(device)"
+   >Forget device</a>

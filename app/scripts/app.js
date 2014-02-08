@@ -3,6 +3,7 @@
 angular.module('webwalletApp', [
   'ngRoute',
   'ngAnimate',
+  'mgcrea.ngStrap',
   'ja.qr'
 ])
   .config(function ($routeProvider) {
@@ -21,6 +22,14 @@ angular.module('webwalletApp', [
       })
       .when('/device/:deviceId/load', {
         templateUrl: 'views/load.html',
+        controller: 'DeviceCtrl'
+      })
+      .when('/device/:deviceId/recovery', {
+        templateUrl: 'views/recovery.html',
+        controller: 'DeviceCtrl'
+      })
+      .when('/device/:deviceId/wipe', {
+        templateUrl: 'views/wipe.html',
         controller: 'DeviceCtrl'
       })
       .when('/device/:deviceId/account/:accountId', {
@@ -42,15 +51,16 @@ angular.module('webwalletApp', [
 
 // load trezor plugin and bootstrap application
 angular.element(document).ready(function () {
-  trezor.load(
+  trezor.load({ configUrl: '/data/config_signed.bin' }).then(
     function (trezorObject) {
       angular.module('webwalletApp').value('trezorApi', trezor);
       angular.module('webwalletApp').value('trezor', trezorObject);
       angular.bootstrap(document, ['webwalletApp']);
     },
-    function (err, install) {
-      if (install) install();
-    },
-    { configUrl: '/config_signed.bin' }
+    function (err) {
+      console.error(err);
+      if (err.install)
+        err.install();
+    }
   );
 });

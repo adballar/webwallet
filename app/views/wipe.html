@@ -1,0 +1,16 @@
+<ol class="breadcrumb">
+  <li><a ng-href="#/device/{{device.id}}">{{device.label()}}</a></li>
+  <li class="active">Wipe</li>
+</ol>
+
+<div ng-if="!device.is('connected')" class="alert alert-danger">
+  <h4>Sorry!</h4> Please connect your device to access this section.
+</div>
+
+<fieldset ng-disabled="!device.is('connected')">
+  <p>You serious?</p>
+
+  <button class="btn btn-danger"
+          ng-click="wipe(device)">Wipe</button>
+  <a href="#/device/{{device.id}}" class="btn btn-link">Cancel</a>
+</fieldset>

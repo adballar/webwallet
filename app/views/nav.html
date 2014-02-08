@@ -1,0 +1,45 @@
+<ul class="nav nav-devices" ng-controller="NavCtrl">
+  <!-- Device -->
+  <li ng-repeat="device in devices">
+    <a ng-href="#/device/{{device.id}}"
+       ng-class="{ active: isActive('/device/{{device.id}}$') }">
+      <h4>
+        {{device.label()}}
+        <span class="dev-status dev-status-{{device.status()}}"
+              ng-switch="device.status()">
+          <span ng-switch-when="loading"
+                class="glyphicon glyphicon-refresh glyphicon-spin"
+                title="Loading..."></span>
+          <span ng-switch-when="connected"
+                class="glyphicon glyphicon-link"
+                title="Connected"></span>
+        </span>
+      </h4>
+    </a>
+
+    <ul class="nav nav-devices-accounts">
+      <!-- Account -->
+      <li ng-repeat="account in device.accounts">
+        <a ng-href="#/device/{{device.id}}/account/{{account.id}}"
+           ng-class="{ active: isActive('/device/{{device.id}}/account/{{account.id}}') }"
+          >{{account.label()}}
+            <small class="dev-acc-info">
+              <span ng-if="account.balance != null">
+                ({{account.balance | amount}} {{account.coin.coin_shortcut}})
+              </span>
+              <span ng-if="account.balance == null">
+                (<span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
+                {{account.coin.coin_shortcut}})
+              </span>
+            </small>
+          </a>
+      </li>
+    </ul>
+
+    <a ng-href="#/device/{{device.id}}/account-add" class="btn btn-sm"
+       ng-class="{ active: isActive('/device/{{device.id}}/account-add') }"
+       ng-click="device.addAccount()"
+       ng-show="device.hasKey()"
+      ><span class="glyphicon glyphicon-plus"></span> Add account</a>
+  </li>
+</ul>

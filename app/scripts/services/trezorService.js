@@ -1,7 +1,10 @@
 'use strict';
 
+// jshint curly:false, camelcase:false, latedef:nofunc
+
 angular.module('webwalletApp')
-  .service('trezorService', function TrezorService(utils, storage, trezor, TrezorDevice, $q, $rootScope) {
+  .service('trezorService', function TrezorService(utils, storage, trezor, TrezorDevice,
+      $modal, $q, $rootScope) {
 
     var self = this,
         STORAGE_DEVICES = 'trezorServiceDevices';
@@ -31,7 +34,7 @@ angular.module('webwalletApp')
       if (!dev) return;
 
       dev.disconnect();
-      dev.unsubscribe();
+      dev.unsubscribe(true); // deregister
       self.devices.splice(idx, 1);
     }
 
@@ -91,9 +94,7 @@ angular.module('webwalletApp')
 
     // start auto-refreshing the data in the device list
     function keepRefreshing() {
-      // initial refresh
       self.devices.forEach(function (dev) {
-        dev.refresh();
         dev.subscribe();
       });
     }
@@ -104,16 +105,95 @@ angular.module('webwalletApp')
       var dev = utils.find(self.devices, desc, compareById);
 
       if (!dev) {
-        dev = new TrezorDevice(desc.id);
+        dev = dev = new TrezorDevice(desc.id);
         self.devices.push(dev);
       }
 
       if (!dev.is('connected')) {
         dev.connect(desc);
-        dev.initialize().then(function () {
-          dev.refresh();
-        });
+        dev.initializeAndLoadAccounts();
       }
+
+      setupCallbacks(dev);
+    }
+
+    function setupCallbacks(dev) {
+      // FIXME: this doesnt belong here
+
+      dev.callbacks.pin = function (message, callback) {
+        var scope = $rootScope.$new(),
+            modal;
+        scope.pin = '';
+        scope.message = message;
+        scope.callback = callback;
+        modal = $modal({
+          template: 'views/modal.pin.html',
+          backdrop: 'static',
+          keyboard: false,
+          scope: scope
+        });
+        modal.$promise.then(null, function () {
+          callback();
+        });
+      };
+
+      dev.callbacks.passphrase = function (callback) {
+        var scope = $rootScope.$new(),
+            modal;
+        scope.passphrase = '';
+        scope.callback = callback;
+        modal = $modal({
+          template: 'views/modal.passphrase.html',
+          backdrop: 'static',
+          keyboard: false,
+          scope: scope
+        });
+        modal.$promise.then(null, function () {
+          callback();
+        });
+      };
+
+      dev.callbacks.button = function (code) {
+        var scope = $rootScope.$new(),
+            modal;
+        scope.code = code;
+        modal = $modal({
+          template: 'views/modal.button.html',
+          backdrop: 'static',
+          keyboard: false,
+          scope: scope
+        });
+        dev.callbacks.receive = function () {
+          dev.callbacks.receive = null;
+          modal.destroy();
+        };
+        dev.callbacks.error = function () {
+          dev.callbacks.error = null;
+          modal.destroy();
+        };
+      };
+
+      dev.callbacks.word = function (callback) {
+        $rootScope.seedWord = '';
+        $rootScope.wordCallback = function (word) {
+          $rootScope.wordCallback = null;
+          $rootScope.seedWord = '';
+          callback(word);
+        };
+      };
+
+      dev.callbacks.outdatedFirmware = function (firmware) {
+        var scope = $rootScope.$new(),
+            modal;
+        scope.firmware = firmware;
+        modal = $modal({
+          template: 'views/modal.firmware.html',
+          backdrop: 'static',
+          keyboard: false,
+          scope: scope
+        });
+      };
+
     }
 
     // marks a device of the given descriptor as disconnected

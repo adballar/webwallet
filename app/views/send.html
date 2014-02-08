@@ -1,48 +1,50 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label()}}</a></li>
   <li><a ng-href="#/device/{{device.id}}/account/{{account.id}}"
     >{{account.label()}}</a></li>
   <li class="active">Send</li>
 </ol>
 
-<p class="nav-sendrecv nav-sendrecv-active btn-group btn-group-lg">
-  <a class="btn active"
-     href="#/device/{{device.id}}/account/{{account.id}}/send"
-     ng-disabled="!device.is('connected')">
-    <span class="glyphicon glyphicon-cloud-upload"></span> Send
-  </a>
-  <a class="btn"
-     href="#/device/{{device.id}}/account/{{account.id}}/receive">
-    <span class="glyphicon glyphicon-cloud-download"></span> Receive
-  </a>
-</p>
-
-<form class="form-horizontal">
+<form name="form" class="form-horizontal">
 
   <div class="form-group">
-    <label for="amount" class="control-label col-sm-2">Send {{account.coin}}:</label>
+    <label for="amount" class="control-label col-sm-2">Send {{account.coin.coin_shortcut}}:</label>
     <div class="col-sm-3">
-      <input id="amount" class="form-control" type="text">
+      <input id="amount" class="form-control" type="text"
+             ng-change="estimate(transaction)"
+             ng-model="transaction.amount"
+             required>
     </div>
     <label for="fee" class="control-label col-sm-1">Fee:</label>
     <div class="col-sm-2">
-      <input id="fee" class="form-control" type="text" value="0.01" readonly>
+      <input id="fee" class="form-control" type="text"
+             ng-model="transaction.fee"
+             readonly disabled>
     </div>
   </div>
 
   <div class="form-group">
     <label for="address" class="control-label col-sm-2">Address:</label>
     <div class="col-sm-6">
-      <input id="address" class="form-control" type="text">
+      <input id="address" class="form-control" type="text"
+             ng-change="estimate(transaction)"
+             ng-model="transaction.address"
+             required>
     </div>
   </div>
 
   <div class="form-group">
     <div class="col-sm-offset-2 col-sm-10">
-      <button type="submit" class="btn btn-primary">Send</button>
+      <button type="submit" class="btn btn-primary"
+              ng-disabled="form.$invalid"
+              ng-click="send()">Send</button>
       <a href="#/device/{{device.id}}/account/{{account.id}}"
          class="btn btn-link">Cancel</a>
     </div>
   </div>
 
 </form>
+
+<pre>
+  {{ builtTx | json }}
+</pre>

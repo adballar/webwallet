@@ -1,11 +1,12 @@
 'use strict';
 
+// jshint curly:false, camelcase:false, latedef:nofunc
+
 // External modules
 
 angular.module('webwalletApp')
-  .value('Crypto', window.Crypto);
-
-angular.module('webwalletApp')
+  .value('BigInteger', window.BigInteger)
+  .value('Crypto', window.Crypto)
   .value('Bitcoin', window.Bitcoin);
 
 // Filters
@@ -16,20 +17,30 @@ angular.module('webwalletApp')
       if (sign > 0) return '+';
       if (sign < 0) return '-';
       return '';
-    }
-  });
-
-angular.module('webwalletApp')
+    };
+  })
+  .filter('passwordify', function () {
+    return function (val) {
+      return val.split('').map(function () { return '*'; }).join('');
+    };
+  })
   .filter('amount', function (Bitcoin) {
-    return function (bn) {
-      if (bn) return Bitcoin.Util.formatValue(bn);
-    }
+    return function (val) {
+      if (val)
+        return Bitcoin.Util.formatValue(val);
+    };
+  })
+  .filter('bytesToHex', function (Bitcoin) {
+    return function (val) {
+      if (val)
+        return Bitcoin.Util.bytesToHex(val);
+    };
   });
 
 // Utils module
 
 angular.module('webwalletApp')
-  .service('utils', function Utils(Bitcoin, $q, $interval, $timeout) {
+  .service('utils', function Utils(Crypto, Bitcoin, $q, $interval, $timeout) {
 
     //
     // str <-> bytes <-> hex
@@ -42,11 +53,13 @@ angular.module('webwalletApp')
         bytes2hex = Bitcoin.Util.bytesToHex;
 
     function str2hex(str) {
+      str = unescape(encodeURIComponent(str));
       return bytes2hex(str2bytes(str));
     }
 
     function hex2str(hex) {
-      return bytes2str(hex2bytes(hex));
+      var bin = bytes2str(hex2bytes(hex));
+      return decodeURIComponent(escape(bin));
     }
 
     this.str2bytes = str2bytes;
@@ -67,14 +80,14 @@ angular.module('webwalletApp')
           node = {};
 
       if (hex.substring(90, 92) !== '00')
-          throw new Error('Contains invalid private key');
+        throw new Error('Contains invalid private key');
 
-      node.version = parseInt(hex.substring(0, 8), 16)
-      node.depth = parseInt(hex.substring(8, 10), 16)
-      node.fingerprint = parseInt(hex.substring(10, 18), 16)
-      node.child_num = parseInt(hex.substring(18, 26), 16)
-      node.chain_code = hex.substring(26, 90)
-      node.private_key = hex.substring(92, 156) // skip 0x00 indicating privkey
+      node.version = parseInt(hex.substring(0, 8), 16);
+      node.depth = parseInt(hex.substring(8, 10), 16);
+      node.fingerprint = parseInt(hex.substring(10, 18), 16);
+      node.child_num = parseInt(hex.substring(18, 26), 16);
+      node.chain_code = hex.substring(26, 90);
+      node.private_key = hex.substring(92, 156); // skip 0x00 indicating privkey
       // TODO: verify checksum
 
       return node;
@@ -107,16 +120,9 @@ angular.module('webwalletApp')
     function node2address(node, type) {
       var pubkey = node.public_key,
           bytes = hex2bytes(pubkey),
-          hash = Bitcoin.Util.sha256ripe160(bytes),
-          types = {
-            prod: 0,
-            testnet: 111,
-          };
+          hash = Bitcoin.Util.sha256ripe160(bytes);
 
-      if (types[type] === undefined)
-        throw new Error('Unknown address type');
-
-      return address2str(hash, types[type]);
+      return address2str(hash, type);
     }
 
     function address2str(hash, version) {
@@ -217,4 +223,67 @@ angular.module('webwalletApp')
     this.filter = filter;
     this.difference = difference;
 
+  });
+
+angular.module('webwalletApp')
+  .factory('flash', function($rootScope, $timeout) {
+    var messages = [];
+
+    var reset;
+    var cleanup = function() {
+      $timeout.cancel(reset);
+      reset = $timeout(function() { messages = []; });
+    };
+
+    var emit = function() {
+      $rootScope.$emit('flash:message', messages, cleanup);
+    };
+
+    $rootScope.$on('$locationChangeSuccess', emit);
+
+    var asMessage = function(level, text) {
+      if (!text) {
+        text = level;
+        level = 'success';
+      }
+      return { level: level, text: text };
+    };
+
+    var asArrayOfMessages = function(level, text) {
+      if (level instanceof Array) return level.map(function(message) {
+        return message.text ? message : asMessage(message);
+      });
+      return text ? [{ level: level, text: text }] : [asMessage(level)];
+    };
+
+    var flash = function(level, text) {
+      emit(messages = asArrayOfMessages(level, text));
+    };
+
+    ['error', 'warning', 'info', 'success'].forEach(function (level) {
+      flash[level] = function (text) { flash(level, text); };
+    });
+
+    return flash;
+  })
+
+  .directive('flashMessages', function() {
+    return {
+      controller: function ($scope, $rootScope) {
+        $rootScope.$on('flash:message', function (_, messages, done) {
+          $scope.messages = messages;
+          done();
+        });
+      },
+      restrict: 'EA',
+      replace: true,
+      template:
+        '<div ng-repeat="m in messages"' +
+        '     ng-switch="m.level">' +
+        '  <div class="alert alert-flash alert-danger"' +
+        '       ng-switch-when="error"><h4 class="text-capitals">{{m.level}}!</h4> {{m.text}}</div>' +
+        '  <div class="alert alert-flash alert-{{m.level}}"' +
+        '       ng-switch-default><h4 class="text-capitals">{{m.level}}</h4> {{m.text}}</div>' +
+        '</div>'
+    };
   });

@@ -1,6 +1,6 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
-  <li class="active">Import private key</li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label()}}</a></li>
+  <li class="active">Import seed</li>
 </ol>
 
 <div ng-if="!device.is('connected')" class="alert alert-danger">
@@ -9,16 +9,7 @@
 
 <div class="row">
   <fieldset ng-disabled="!device.is('connected')">
-      <form class="devload col-md-6">
-
-        <div class="form-group">
-          <label for="language" class="sr-only">Language</label>
-          <select name="langauge" id="langauge" class="form-control"
-                  ng-model="settings.language"
-                  ng-options="k as v for (k, v) in { english: 'English' }">
-            <option value="">Select language</option>
-          </select>
-        </div>
+      <form name="form" class="devload col-md-6">
 
         <div class="form-group">
           <label for="label" class="control-label">Device label</label>
@@ -28,9 +19,9 @@
         </div>
 
         <div class="form-group">
-          <label for="xprv" class="control-label">Private key</label>
-          <textarea name="xprv" id="xprv" class="form-control"
-                    ng-model="settings.xprv"></textarea>
+          <label for="payload" class="control-label">Seed or private key</label>
+          <textarea name="payload" id="payload" class="form-control" required
+                    ng-model="settings.payload"></textarea>
         </div>
 
         <div class="form-group">
@@ -48,7 +39,8 @@
 
         <div class="form-group">
           <button class="btn btn-primary"
-                  ng-click="loadByXprv(device, settings)">Continue</button>
+                  ng-disabled="!form.$valid"
+                  ng-click="load(device, settings)">Continue</button>
           <a href="#/device/{{device.id}}"
              class="btn btn-link">Cancel</a>
         </div>

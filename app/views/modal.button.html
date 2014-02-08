@@ -1,0 +1,29 @@
+<div class="modal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body"
+           ng-switch="code">
+
+        <div ng-switch-when="ButtonRequest_FeeOverThreshold">
+          <h3>Fee is over threshold.</h3> Please confirm the action on your device.
+        </div>
+        <div ng-switch-when="ButtonRequest_ConfirmOutput">
+          <h3>Please confirm the transaction output on your device.</h3>
+        </div>
+        <div ng-switch-when="ButtonRequest_ConfirmWord">
+          <h3>Please write down the seed word from the display of your device.</h3>
+        </div>
+        <div ng-switch-when="ButtonRequest_ResetDevice">
+          <h3>Please confirm the reset action on your device.</h3>
+        </div>
+        <div ng-switch-when="ButtonRequest_WipeDevice">
+          <h3>All data on your device will be deleted.</h3> This action cannot be undone. Please confirm on your device.
+        </div>
+        <div ng-switch-default>
+          <h3>Please confirm the action on your device.</h3>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,5 +1,5 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label()}}</a></li>
   <li class="active">{{account.label()}}</li>
 </ol>
 
@@ -19,20 +19,43 @@
    ng-show="account.transactions == null">
   <span class="glyphicon glyphicon-refresh glyphicon-spin"></span>
 </p>
+<p class="text-center text-muted h4"
+   ng-show="account.transactions != null && !account.transactions.length">
+   No transactions to display
+</p>
 <table class="txlist table table-hover"
-       ng-show="account.transactions != null">
+       ng-show="account.transactions != null && account.transactions.length">
   <tbody>
     <tr class="txlist-tx"
         ng-click="tx.active = !tx.active"
         ng-repeat-start="tx in account.transactions">
-      <td class="txlist-date">
-        {{tx.timestamp | date:'short'}}
+      <td class="txlist-date"
+          ng-if="tx.timestamp">
+        {{tx.timestamp}}
       </td>
-      <td class="txlist-comment" ng-if="tx.comment">
+      <td class="txlist-date text-center text-muted"
+          ng-if="!tx.timestamp">
+        &mdash;
+      </td>
+      <td class="txlist-comment"
+          ng-if="tx.comment">
         "{{tx.comment}}"
       </td>
-      <td class="txlist-address text-muted" ng-if="!tx.comment">
-        {{tx.analysis.addr.toString()}}
+      <td class="txlist-address"
+          ng-if="!tx.comment"
+          ng-switch="tx.analysis.type">
+        <span class="text-success" ng-switch-when="recv">
+          <span class="glyphicon glyphicon-arrow-down"></span> {{tx.analysis.addr.toString()}}
+        </span>
+        <span class="text-danger" ng-switch-when="sent">
+          <span class="glyphicon glyphicon-arrow-up"></span> {{tx.analysis.addr.toString()}}
+        </span>
+        <span class="text-warning" ng-switch-when="self">
+          <span class="glyphicon glyphicon-user"></span> Sent to myself
+        </span>
+        <span class="text-muted" ng-switch-default>
+          <span class="glyphicon glyphicon-question-sign"></span> Unknown
+        </span>
       </td>
       <td class="txlist-amount"
           ng-class="{ 'text-success': tx.analysis.impact.sign > 0,

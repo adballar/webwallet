@@ -20,12 +20,14 @@
   animation: spin 2s infinite linear;
 }
 
-/* Global Bootstrap overrides */
+/* Global Bootstrap overrides and addons */
 
 .form-control,
+.input-lg,
 .btn,
 .alert,
 .breadcrumb,
+.modal-content,
 .btn-group-lg > .btn,
 .list-group-item:first-child,
 .list-group-item:last-child {
@@ -34,12 +36,30 @@
 
 .alert {
   border: 0;
-  padding: 20px;
+  padding: 15px 20px;
 }
 
-/*.breadcrumb {
-  display: none;
-}*/
+/* ngAnimate modals */
+.modal-backdrop.am-fade {
+  opacity: .5;
+  transition: opacity .15s linear;
+}
+.modal-backdrop.am-fade.ng-enter {
+  opacity: 0;
+}
+.modal-backdrop.am-fade.ng-enter-active {
+  opacity: .5;
+}
+.modal-backdrop.am-fade.ng-leave {
+  opacity: .5;
+}
+.modal-backdrop.am-fade.ng-leave-active {
+  opacity: 0;
+}
+
+.text-capitals {
+  text-transform: capitalize;
+}
 
 /* Layout, header, footer */
 
@@ -54,7 +74,7 @@
   margin-top: 4px;
 }
 
-.page-middle {
+.page-container {
   padding-top: 20px;
 }
 
@@ -119,7 +139,7 @@
 
 .txlist-detail dt {
   font-weight: normal;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
 .txlist-hash {
@@ -138,6 +158,12 @@
 .nav-sendrecv-active .btn.active {
 }
 
+/* Receive */
+
+.address-list .badge {
+  opacity: 0.5;
+}
+
 /* Device setup */
 
 .devsetup-strength {
@@ -148,4 +174,25 @@
   display: block;
   text-transform: uppercase;
   font-size: 10px;
+}
+
+/* PIN modal */
+
+.pinmodal .modal-body .form-group {
+  margin-left: 0;
+  margin-right: 0;
+  margin-bottom: 10px;
+}
+
+.pinmodal .modal-body .col-sm-4 {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.pinmodal .modal-body {
+  padding-bottom: 0;
+}
+
+.pinmodal .modal-footer {
+  margin-top: 0;
 }

@@ -1,0 +1,18 @@
+<div class="modal">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content">
+      <div class="modal-body">
+
+        <h3>Your device firmware is out of date.</h3>
+        <p>Please plug your device in the bootloader mode.</p>
+
+        <h5 ng-if="firmware.changelog">Changelog:</h5>
+        <pre ng-if="firmware.changelog">{{firmware.changelog}}</pre>
+      </div>
+      <div class="modal-footer"
+           ng-if="!firmware.required">
+        <button type="button" ng-click="$hide()">
+      </div>
+    </div>
+  </div>
+</div>

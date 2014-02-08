@@ -1,28 +1,42 @@
 <ol class="breadcrumb">
-  <li><a ng-href="#/device/{{device.id}}">{{device.label || 'My TREZOR'}}</a></li>
+  <li><a ng-href="#/device/{{device.id}}">{{device.label()}}</a></li>
   <li><a ng-href="#/device/{{device.id}}/account/{{account.id}}"
     >{{account.label()}}</a></li>
   <li class="active">Receive</li>
 </ol>
 
-<p class="nav-sendrecv nav-sendrecv-active btn-group btn-group-lg">
-  <a class="btn"
-     href="#/device/{{device.id}}/account/{{account.id}}/send"
-     ng-disabled="!device.is('connected')">
-    <span class="glyphicon glyphicon-cloud-upload"></span> Send
-  </a>
-  <a class="btn active"
-     href="#/device/{{device.id}}/account/{{account.id}}/receive">
-    <span class="glyphicon glyphicon-cloud-download"></span> Receive
-  </a>
-</p>
-
 <div class="row">
 
-  <div class="col-md-6">
+  <div class="col-md-8">
+
+    <button class="address-list-toggleused btn btn-sm btn-link pull-right"
+            ng-show="!usedAddresses.length && account.transactions.length"
+            ng-click="usedAddresses = account.usedAddresses()">
+      <span class="glyphicon glyphicon-chevron-up"></span> Show used
+    </button>
+
+    <button class="address-list-toggleused btn btn-sm btn-link pull-right"
+            ng-show="usedAddresses.length && account.transactions.length"
+            ng-click="usedAddresses = []">
+      <span class="glyphicon glyphicon-chevron-down"></span> Hide used
+    </button>
+
     <h5>Address</h5>
 
-    <div class="list-group">
+    <div class="list-group address-list address-list-used"
+         ng-show="usedAddresses.length">
+      <a class="list-group-item"
+         ng-repeat="address in usedAddresses"
+         ng-class="{ active: activeAddress.address === address.address }"
+         ng-click="activate(address)">
+        {{address.address}}
+        <small class="address-list-balance text-success pull-right"
+          >({{address.balance | amount}} {{account.coin.coin_shortcut}})</small>
+      </a>
+      <hr>
+    </div>
+
+    <div class="list-group address-list">
       <div ng-repeat-start="address in addresses"
            ng-if="$index == lookAhead">
         <hr>
@@ -33,27 +47,40 @@
         </p>
       </div>
 
-      <a href="" class="list-group-item"
-         ng-class="{ active: activeAddressIndex === $index }"
-         ng-click="activate($index)"
+      <a class="list-group-item"
+         ng-class="{ active: activeAddress.address === address.address }"
+         ng-click="activate(address)"
          ng-repeat-end>
-        {{address}}
+        {{address.address}}
       </a>
     </div>
 
-    <form class="form-inline">
-      <div class="form-group">
-        <button type="button" class="btn btn-default"
-                ng-click="more()">
-          <span class="glyphicon glyphicon-plus"></span> More please</button>
-      </div>
-    </form>
+    <button class="btn btn-default"
+            ng-click="more()">
+      <span class="glyphicon glyphicon-plus"></span> More please
+    </button>
   </div>
 
-  <div class="col-md-6">
+  <div class="col-md-4">
     <h5>QR Code</h5>
 
-    <qr size="335" text="'bitcoin:' + addresses[activeAddressIndex]"></qr>
+    <qr size="210" text="'bitcoin:' + activeAddress.address"></qr>
+
+    <div ng-if="activeAddress">
+      <h5>Details</h5>
+
+      <ul class="list-unstyled">
+        <li ng-if="activeAddress.path">
+          <span class="h6">BIP32 Path:</span>
+          <small class="text-monospace">m/{{ activeAddress.path.join('/') }}</small>
+        </li>
+        <li ng-if="activeAddress.balance">
+          <span class="h6">Balance:</span>
+          <small class="text-success"
+            >{{ activeAddress.balance | amount }} {{account.coin.coin_shortcut}}</small>
+        </li>
+      </ul>
+    </div>
   </div>
 
 </div>
